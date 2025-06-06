@@ -681,6 +681,7 @@ const Dashboard = () => {
           priority: t.prioridad,
           assignee: teamMembers.find((m) => m.id === t.asignados)?.email || "",
           sprint: t.sprint,
+          puntosHistoria: t.puntosHistoria || null,
         };
       });
       setTasks((prev) => ({ ...prev, [item.id]: mapped }));
@@ -960,6 +961,8 @@ const Dashboard = () => {
       }
 
       try {
+        console.log("Dragged Task:", draggedTask);
+        
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/projectsFB/${projectId}/tasks`,
           {
@@ -1016,6 +1019,8 @@ const Dashboard = () => {
           prioridad: task.priority,
           asignados:
             teamMembers.find((m) => m.email === task.assignee)?.id || null,
+            sprint: task.sprint || null,
+            puntosHistoria: task.puntosHistoria || null,
         })),
       };
       await fetch(`${BACKEND_URL}/projectsFB/${projectId}/tasks`, {

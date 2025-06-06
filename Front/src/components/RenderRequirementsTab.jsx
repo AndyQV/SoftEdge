@@ -92,6 +92,7 @@ const RenderRequirementsTab = ({ ...props }) => {
         titulo: t.title,
         descripcion: t.description,
         prioridad: t.priority,
+        puntosHistoria: t.puntosHistoria,
         asignados: teamMembers.find((m) => m.email === t.assignee)?.id || null,
       })),
     };
@@ -130,6 +131,7 @@ const RenderRequirementsTab = ({ ...props }) => {
           asignados:
             teamMembers.find((m) => m.email === t.assignee)?.id || null,
           sprint: t.sprint,
+          puntosHistoria: t.puntosHistoria || null,
         })),
       };
       await fetch(`${BACKEND_URL}/projectsFB/${project.id}/tasks`, {
@@ -192,6 +194,7 @@ const RenderRequirementsTab = ({ ...props }) => {
       priority: taskFormData.priority,
       assignee: taskFormData.assignee,
       sprint: taskFormData.sprint || "N/A",
+      puntosHistoria: taskFormData.puntosHistoria || null,
     };
 
     const currentTasks = tasks[selectedItem.id] || [];
@@ -213,6 +216,7 @@ const RenderRequirementsTab = ({ ...props }) => {
           teamMembers.find((m) => m.email === task.assignee)?.id || null,
         estado: "En progreso",
         sprint: task.sprint === "N/A" ? null : Number(task.sprint),
+        puntosHistoria: task.puntosHistoria || null,
       })),
     };
 
@@ -352,6 +356,7 @@ const RenderRequirementsTab = ({ ...props }) => {
                             <th>Prioridad</th>
                             <th>Asignado</th>
                             <th>Sprint</th>
+                            <th>Valor</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -628,6 +633,22 @@ const RenderRequirementsTab = ({ ...props }) => {
                                     </select>
                                   ) : (
                                     task.sprint ?? "N/A"
+                                  )}
+                                </td>
+                                <td>
+                                  {editingTasks ? (
+                                    <input
+                                      type="number"
+                                      className="edit-input"
+                                      value={task.puntosHistoria || ""}
+                                      onChange={(e) =>
+                                        handleTaskEditChange(task.id, "puntosHistoria", e.target.value)
+                                      }
+                                      min="1"
+                                      max="13"
+                                    />
+                                  ) : (
+                                    task.puntosHistoria || "N/A"
                                   )}
                                 </td>
                               </tr>
