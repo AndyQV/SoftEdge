@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { sqlConnect, sql } from "../utils/sql.js";
 import axios from "axios";
 import qs from "qs";
@@ -15,7 +16,15 @@ export const login = async (req, res) => {
 
     if (data.recordset.length > 0) {
       const user = data.recordset[0];
-      const isLogin = user.password === req.body.password;
+
+      // Extraer sal
+      const salt = user.password.slice(0, 10);
+      const preHash = salt + req.body.password;
+      const hashing = crypto.createHash("sha256");
+      const hash = hashing.update(preHash).digest("hex");
+      const hashSalt = salt + hash;
+
+      const isLogin = user.password === hashSalt;
 
       if (isLogin) {
         // Generar JWT
@@ -72,11 +81,18 @@ export const registro = async (req, res) => {
       });
     }
 
+    // Generar sal
+    const salt = crypto.randomBytes(5).toString("hex");
+    const preHash = salt + password;
+    const hashing = crypto.createHash("sha256");
+    const hash = hashing.update(preHash).digest("hex");
+    const hashedPassword = salt + hash;
+
     const result = await pool
       .request()
       .input("username", sql.VarChar, name)
       .input("lastname", sql.VarChar, lastname || null)
-      .input("password", sql.VarChar, password)
+      .input("password", sql.VarChar, hashedPassword)
       .input("phone", sql.VarChar, phone || null)
       .input("email", sql.VarChar, email || null).query(`
         INSERT INTO dbo.Users (username, lastname, password, phone, email, role)
@@ -105,9 +121,10 @@ export const exchangeWhoopToken = async (req, res) => {
   const { code } = req.body;
   try {
     console.log("Exchanging WHOOP authorization code for tokens");
-    const redirectUri = process.env.NODE_ENV === 'production'
-      ? 'https://soft-edge-two.vercel.app/whoop-callback'
-      : 'http://localhost:5173/whoop-callback';
+    const redirectUri =
+      process.env.NODE_ENV === "production"
+        ? "https://soft-edge-two.vercel.app/whoop-callback"
+        : "http://localhost:5173/whoop-callback";
 
     const response = await axios.post(
       "https://api.prod.whoop.com/oauth/oauth2/token",
@@ -118,7 +135,8 @@ export const exchangeWhoopToken = async (req, res) => {
         grant_type: "authorization_code",
         code,
         redirect_uri: redirectUri,
-        scope: "read:sleep read:recovery read:cycles read:workout read:profile read:body_measurement"
+        scope:
+          "read:sleep read:recovery read:cycles read:workout read:profile read:body_measurement",
       }),
       {
         headers: {

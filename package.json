@@ -7,6 +7,7 @@
     "axios": "^1.9.0",
     "chart.js": "^4.4.9",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "firebase-admin": "^13.2.0",
@@ -26,5 +27,15 @@
     "react-router-dom": "^7.5.0",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
+  },
+  "name": "softedge",
+  "scripts": {
+    "dev": "concurrently \"cd Front && npm run dev\" \"cd Back && npm start\"",
+    "dev:front": "cd Front && npm run dev",
+    "dev:back": "cd Back && npm start",
+    "migrate": "cd Back && node controllers/migratePasswords.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
