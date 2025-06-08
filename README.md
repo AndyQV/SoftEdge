@@ -7,3 +7,9 @@ npm install --save-dev concurrently
 
 ## Paso 2: Instalar todas las dependencias y correr ambos servidores en la misma terminal:
 npm run setup
+
+## Paso 2.a: Instalar todas las dependencias sin correr los servidores:
+npm install
+
+## Paso 2.a: Correr ambos servidores sin instalar nada:
+npm run dev
