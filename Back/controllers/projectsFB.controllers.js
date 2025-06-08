@@ -566,6 +566,7 @@ export const getAllTasks = async (req, res) => {
                 ...task,
                 elementId: element.id, // ID del elemento al que pertenece la tarea
                 requirementType: section, // Tipo de requerimiento (EP, RF, RNF, HU)
+                puntosHistoria: task.puntosHistoria,
               }))
             );
           }

@@ -114,6 +114,7 @@ function Generate() {
            "asignado": "NULL",
            "estado": "En progreso",
            "sprint": "1"
+           "puntosHistoria": "Número de puntos de historia asignados a esta tarea (1-13, basado en Fibonacci)"
          }
        ]
      }
@@ -238,6 +239,11 @@ function Generate() {
         .trim();
 
       JSON.parse(cleanJSON); // Validar que sea JSON válido
+
+      const parsedJSON = JSON.parse(cleanJSON);
+      console.log("JSON generado:", parsedJSON);
+
+
       addToHistory(prompt);
     } catch (error) {
       clearInterval(progressInterval);
@@ -248,6 +254,8 @@ function Generate() {
       setCurrentQuote(0);
       console.error("Error:", error);
     }
+
+    
   };
 
   const handleCopy = async (e) => {
