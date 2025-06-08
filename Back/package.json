@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "migrate": "node controllers/migratePasswords.js"
   },
   "type": "module",
   "dependencies": {
