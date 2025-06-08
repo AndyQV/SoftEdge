@@ -650,6 +650,7 @@ const Dashboard = () => {
   };
 
   const handleItemClick = async (item) => {
+    console.log("Active Requirement:", activeRequirement);
     setSelectedItem(item);
     setRequirementEditData({
       title: item.titulo,
@@ -944,6 +945,7 @@ const Dashboard = () => {
   };
 
   const handleDrop = async (e, newStatus) => {
+    
     e.preventDefault();
     if (draggedTask) {
       if (!projectId) {
@@ -974,6 +976,7 @@ const Dashboard = () => {
             body: JSON.stringify({
               taskId: draggedTask.id,
               estado: newStatus,
+              
             }),
           }
         );

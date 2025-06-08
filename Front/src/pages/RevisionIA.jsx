@@ -54,7 +54,12 @@ function RevisionIA() {
             titulo: item.titulo,
             data: item.data,
 
-            tasks: Array.isArray(item.tasks) ? item.tasks : [], // <-- preservar o inicializar
+            tasks: Array.isArray(item.tasks)
+            ? item.tasks.map((task) => ({
+                ...task,
+                puntosHistoria: task.puntosHistoria || "N/A", // Asegúrate de incluir puntosHistoria
+              }))
+            : [],
           }))
         : [];
     };
@@ -324,6 +329,9 @@ function RevisionIA() {
             if (sprintValue < 0) sprintValue = 0;
           }
           t.sprint = sprintValue;
+          break;
+        case "puntosHistoria": 
+          t.puntosHistoria = Number(value);
           break;
         default:
           console.warn(`Campo desconocido: ${field}`);
@@ -804,6 +812,7 @@ function RevisionIA() {
                             <th>Descripción</th>
                             <th>Prioridad</th>
                             <th>Sprint</th>
+                            <th>Valor</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -900,6 +909,22 @@ function RevisionIA() {
                                   />
                                 ) : (
                                   task.sprint || "N/A"
+                                )}
+                              </td>
+                              <td>
+                                {editing ? (
+                                  <input
+                                    type="number"
+                                    value={task.puntosHistoria || ""}
+                                    onChange={(e) =>
+                                      handleTaskChange(i, "puntosHistoria", e.target.value)
+                                    }
+                                    className="edit-input"
+                                    min="1"
+                                    max="13"
+                                  />
+                                ) : (
+                                  task.puntosHistoria || "N/A"
                                 )}
                               </td>
                             </tr>
