@@ -1,4 +1,5 @@
 {
+  "name": "softedge",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -28,8 +29,11 @@
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },
-  "name": "softedge",
   "scripts": {
+    "install:all": "npm run install:front && npm run install:back",
+    "install:front": "cd Front && npm i @mui/material @emotion/styled @emotion/react react react-dom react-router-dom cypress axios react-chartjs-2 chart.js @mui/icons-material",
+    "install:back": "cd Back && npm i cors dotenv express firebase-admin mongoose morgan mssql nodemon swagger-ui-express yamljs multer @vercel/node jsonwebtoken dialogflow-fulfillment ngrok axios qs dialogflow body-parser @google-cloud/dialogflow",
+    "setup": "npm run install:all && npm run dev",
     "dev": "concurrently \"cd Front && npm run dev\" \"cd Back && npm start\"",
     "dev:front": "cd Front && npm run dev",
     "dev:back": "cd Back && npm start",
