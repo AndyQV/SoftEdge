@@ -830,7 +830,7 @@ function RevisionIA() {
                                         e.target.value
                                       )
                                     }
-                                    className="edit-textarea"
+                                    className="edit-textarea edit-title-textarea"
                                     rows={2} // Adjust rows as needed for better visibility
                                   />
                                 ) : (
