@@ -1045,7 +1045,6 @@ const Dashboard = () => {
         },
         body: JSON.stringify(payload),
       });
-      setSuccessMessage("Orden de tareas actualizado.");
     } catch (error) {
       setError("Error al actualizar el orden de tareas.");
       console.error(error);
