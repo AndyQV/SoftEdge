@@ -43,6 +43,7 @@ const Dashboard = () => {
   const [sprintDuration, setSprintDuration] = useState(2);
   const [deletingSprint, setDeletingSprint] = useState(false);
   const [showInsertElementPopup, setShowInsertElementPopup] = useState(false);
+  
 
   // Función para generar sprints dinámicamente
   const generateSprints = (
@@ -944,58 +945,53 @@ const Dashboard = () => {
     e.currentTarget.classList.remove("drag-over");
   };
 
-  const handleDrop = async (e, newStatus) => {
-    
+  const handleDrop = async (e, targetIndex, elementId) => {
     e.preventDefault();
-    if (draggedTask) {
-      if (!projectId) {
-        console.error("El ID del proyecto no está definido");
-        return;
-      }
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found. Please log in.");
-        setError(
-          "No se encontró un token de autenticación. Por favor, inicia sesión."
-        );
-        return;
-      }
-
-      try {
-        console.log("Dragged Task:", draggedTask);
-        
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/projectsFB/${projectId}/tasks`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              taskId: draggedTask.id,
-              estado: newStatus,
-              
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error(
-            "Error al actualizar la tarea en Firestore:",
-            errorData
-          );
-          setError(errorData.message || "Error al actualizar la tarea.");
-        }
-      } catch (error) {
-        console.error("Error al conectar con Firestore:", error);
-        setError("Error al conectar con el servidor.");
-      }
-
-      setDraggedTask(null);
+    if (!draggedTask || !elementId) return;
+  
+    // 1. Copia el array actual de tareas del HU
+    const currentTasks = tasks[elementId] ? [...tasks[elementId]] : [];
+    const fromIndex = draggedTask.index;
+  
+    // 2. Reordena el array localmente
+    const [movedTask] = currentTasks.splice(fromIndex, 1);
+    currentTasks.splice(targetIndex, 0, movedTask);
+  
+    setTasks((prev) => ({
+      ...prev,
+      [elementId]: currentTasks,
+    }));
+  
+    // 3. Prepara el payload para el backend
+    const payload = {
+      requirementType: activeRequirement,
+      elementId,
+      tasks: currentTasks.map((task) => ({
+        id: task.id.replace(/^T/, ""),
+        titulo: task.title,
+        descripcion: task.description,
+        prioridad: task.priority,
+        asignados: teamMembers.find((m) => m.email === task.assignee)?.id || null,
+        sprint: task.sprint,
+        puntosHistoria: task.puntosHistoria || null,
+      })),
+    };
+  
+    try {
+      await fetch(`${BACKEND_URL}/projectsFB/${projectId}/tasks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      setSuccessMessage("Orden de tareas actualizado.");
+    } catch (error) {
+      setError("Error al actualizar el orden de tareas.");
+      console.error(error);
     }
+    setDraggedTask(null);
   };
 
   const handleDeleteTask = async (taskId, elementId) => {
@@ -2177,11 +2173,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Popup de error */}
-      <ErrorPopup message={error} onClose={closeErrorPopup} />
-
-      {/* Popup de éxito */}
-      <SuccessPopup message={successMessage} onClose={closeSuccessPopup} />
+      
 
       {deletingSprint && (
         <div className="spinner-overlay">
@@ -2193,6 +2185,13 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      {/* Popup de error */}
+      <ErrorPopup message={error} onClose={closeErrorPopup} />
+
+      {/* Popup de éxito */}
+      <SuccessPopup message={successMessage} onClose={closeSuccessPopup} />
+      
+      
     </div>
   );
 };
