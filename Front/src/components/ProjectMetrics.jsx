@@ -17,7 +17,7 @@ const ProjectMetrics = ({ ...props }) => {
 
   const taskPieData = {
     labels: ["Completadas", "Pendientes"],
-    datasets: [ 
+    datasets: [
       {
         data: [completedTasks, pendingTasks],
         backgroundColor: ["#c1a5d4", "#eddff6"],
@@ -46,21 +46,13 @@ const ProjectMetrics = ({ ...props }) => {
   const sprintProgress = (sprint) => {
     const sprintTasks = sprint.tasks.length;
 
-    const inProgressTasks = sprint.tasks.filter((task) => {
-      const status = task.estado?.trim().toLowerCase();
-      return status === "en progreso" || status === "in progress";
-    }).length;
-
     const completedTasks = sprint.tasks.filter((task) => {
       const status = task.estado?.trim().toLowerCase();
       return status === "completado" || status === "completed";
     }).length;
 
     return sprintTasks > 0
-      ? (
-          (completedTasks / sprintTasks) * 100 +
-          (inProgressTasks / 2 / sprintTasks) * 100
-        ).toFixed(2)
+      ? ((completedTasks / sprintTasks) * 100).toFixed(2)
       : 0;
   };
 

@@ -43,7 +43,6 @@ const Dashboard = () => {
   const [sprintDuration, setSprintDuration] = useState(2);
   const [deletingSprint, setDeletingSprint] = useState(false);
   const [showInsertElementPopup, setShowInsertElementPopup] = useState(false);
-  
 
   // Función para generar sprints dinámicamente
   const generateSprints = (
@@ -63,38 +62,96 @@ const Dashboard = () => {
       const endDate = new Date(startDate);
       endDate.setUTCDate(endDate.getUTCDate() + durationDays - 1);
 
+      const sprintTasks = projectTasks.filter(
+        (task) => parseInt(task.sprint, 10) === i
+      );
+
       // Determinar status del sprint
       let status;
-      if (i === 1) {
-        status = "En progreso";
-      } else if (i === 2 && sprintNumber > 1) {
+
+      if (sprintTasks.length === 0) {
+        // Si no hay tareas, el sprint está "Planificado"
         status = "Planificado";
       } else {
-        status = "Pendiente";
+        // Si hay tareas, verificar sus estados
+        const hasInProgressTasks = sprintTasks.some(
+          (task) =>
+            task.estado === "En Progreso" || task.estado === "En progreso"
+        );
+
+        const allTasksCompleted = sprintTasks.every(
+          (task) => task.estado === "Completado" || task.estado === "Hecho"
+        );
+
+        if (allTasksCompleted) {
+          status = "Completado";
+        } else if (hasInProgressTasks) {
+          status = "En progreso";
+        } else {
+          // Si hay tareas pero ninguna está en progreso ni todas completadas
+          status = "Planificado";
+        }
       }
 
       // Filtrar tareas para este sprint específico
-      const sprintTasks = projectTasks
-        .filter((task) => parseInt(task.sprint, 10) === i)
-        .map((task) => ({
-          title: task.titulo || task.title,
-          description: task.descripcion || task.description,
-          estado: task.estado || "Pendiente",
-          priority: task.prioridad || task.priority,
-          assignee: task.asignado || task.assignee,
-        }));
+      const mappedTasks = sprintTasks.map((task) => ({
+        title: task.titulo || task.title,
+        description: task.descripcion || task.description,
+        estado: task.estado || "Pendiente",
+        priority: task.prioridad || task.priority,
+        assignee: task.asignado || task.assignee,
+      }));
 
       sprints.push({
         number: i,
         status: status,
-        // Usar toISOString().split("T")[0] para mantener formato UTC
         startDate: startDate.toISOString().split("T")[0],
         endDate: endDate.toISOString().split("T")[0],
-        tasks: sprintTasks,
+        tasks: mappedTasks,
       });
     }
     return sprints;
   };
+
+  const checkAndUpdateSprintStatus = async (sprintNumber) => {
+    try {
+      // Obtener las tasks del sprint
+      const sprintTasks = allTasks.filter(
+        (task) => parseInt(task.sprint, 10) === sprintNumber
+      );
+
+      if (sprintTasks.length === 0) return;
+
+      // Checar si todas las tasks estan completadas
+      const allTasksCompleted = sprintTasks.every(
+        (task) => task.estado === "Completado"
+      );
+
+      if (allTasksCompleted) {
+        // Actualizar status a "Completado"
+        const updatedSprints = sprints.map((sprint) => {
+          if (
+            sprint.number === sprintNumber &&
+            sprint.status !== "Completado"
+          ) {
+            return { ...sprint, status: "Completado" };
+          }
+          return sprint;
+        });
+
+        setSprints(updatedSprints);
+      }
+    } catch (error) {
+      console.error("Error checking sprint status:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (allTasks.length > 0 && sprints.length > 0)
+      sprints.forEach((sprint) => {
+        checkAndUpdateSprintStatus(sprint.number);
+      });
+  }, [allTasks]);
 
   // Sprint backlog states
   const [sprints, setSprints] = useState([
@@ -384,7 +441,8 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error adding element:", error);
       setError(
-        error.message || "Error al agregar el elemento. Por favor, inténtalo de nuevo."
+        error.message ||
+          "Error al agregar el elemento. Por favor, inténtalo de nuevo."
       );
     }
   };
@@ -948,20 +1006,20 @@ const Dashboard = () => {
   const handleDrop = async (e, targetIndex, elementId) => {
     e.preventDefault();
     if (!draggedTask || !elementId) return;
-  
+
     // 1. Copia el array actual de tareas del HU
     const currentTasks = tasks[elementId] ? [...tasks[elementId]] : [];
     const fromIndex = draggedTask.index;
-  
+
     // 2. Reordena el array localmente
     const [movedTask] = currentTasks.splice(fromIndex, 1);
     currentTasks.splice(targetIndex, 0, movedTask);
-  
+
     setTasks((prev) => ({
       ...prev,
       [elementId]: currentTasks,
     }));
-  
+
     // 3. Prepara el payload para el backend
     const payload = {
       requirementType: activeRequirement,
@@ -971,12 +1029,13 @@ const Dashboard = () => {
         titulo: task.title,
         descripcion: task.description,
         prioridad: task.priority,
-        asignados: teamMembers.find((m) => m.email === task.assignee)?.id || null,
+        asignados:
+          teamMembers.find((m) => m.email === task.assignee)?.id || null,
         sprint: task.sprint,
         puntosHistoria: task.puntosHistoria || null,
       })),
     };
-  
+
     try {
       await fetch(`${BACKEND_URL}/projectsFB/${projectId}/tasks`, {
         method: "POST",
@@ -1018,8 +1077,8 @@ const Dashboard = () => {
           prioridad: task.priority,
           asignados:
             teamMembers.find((m) => m.email === task.assignee)?.id || null,
-            sprint: task.sprint || null,
-            puntosHistoria: task.puntosHistoria || null,
+          sprint: task.sprint || null,
+          puntosHistoria: task.puntosHistoria || null,
         })),
       };
       await fetch(`${BACKEND_URL}/projectsFB/${projectId}/tasks`, {
@@ -1186,7 +1245,13 @@ const Dashboard = () => {
 
   const renderRequirementsTab = () => (
     <div>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: 16,
+        }}
+      >
         <button
           className="popup-button primary small-add-element"
           onClick={() => setShowInsertElementPopup(true)}
@@ -1687,7 +1752,10 @@ const Dashboard = () => {
         const tasksData = await tasksResponse.json();
         const allTasks = tasksData.tasks || [];
 
-        // Regenerate sprints with updated task data
+        // Actualizar tasks
+        setAllTasks(allTasks);
+
+        // Regenerar sprints checando estados
         const sprintNumber = project.sprintNumber || 3;
         const generatedSprints = generateSprints(
           sprintNumber,
@@ -1697,7 +1765,7 @@ const Dashboard = () => {
         );
         setSprints(generatedSprints);
 
-        // Update the selected sprint with fresh data
+        // Actualizar sprint actual
         if (selectedSprint) {
           const updatedSelectedSprint = generatedSprints.find(
             (sprint) => sprint.number === selectedSprint.number
@@ -2173,8 +2241,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      
-
       {deletingSprint && (
         <div className="spinner-overlay">
           <div className="loading-overlay">
@@ -2190,8 +2256,6 @@ const Dashboard = () => {
 
       {/* Popup de éxito */}
       <SuccessPopup message={successMessage} onClose={closeSuccessPopup} />
-      
-      
     </div>
   );
 };
