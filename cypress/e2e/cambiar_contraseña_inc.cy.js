@@ -15,12 +15,16 @@ describe("template spec", () => {
     cy.get(".main-button").click();
     cy.get(".profile-avatar").click();
     cy.get(".profile-popup > :nth-child(1)").click();
-    cy.get(".edit-info-button").click();
-    cy.get(":nth-child(1) > input").clear().type("Adminer");
-    cy.get(".perfil-info > :nth-child(2) > input").clear().type("Tec3");
-    cy.get(":nth-child(4) > input").clear().type("8123928827");
+    cy.get(".change-password-button").click();
+    cy.get(".password-popup-container > :nth-child(2) > input")
+      .clear()
+      .type(credentials.password);
+    cy.get(":nth-child(3) > input").clear().type(credentials.newPassword);
+    cy.get(":nth-child(4) > input").clear().type(credentials.newPassword);
     cy.get(".save-button").click();
-    cy.get(".success-popup-continue"); // Si sale el popup, se hizo correctamente
+    cy.get(".error-popup-message").contains(
+      "La nueva contraseña debe ser diferente a la contraseña actual"
+    ); // Checar el mensaje
   });
 });
 //
