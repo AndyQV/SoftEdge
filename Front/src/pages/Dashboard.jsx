@@ -2173,11 +2173,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Popup de error */}
-      <ErrorPopup message={error} onClose={closeErrorPopup} />
-
-      {/* Popup de éxito */}
-      <SuccessPopup message={successMessage} onClose={closeSuccessPopup} />
+      
 
       {deletingSprint && (
         <div className="spinner-overlay">
@@ -2189,6 +2185,13 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      {/* Popup de error */}
+      <ErrorPopup message={error} onClose={closeErrorPopup} />
+
+      {/* Popup de éxito */}
+      <SuccessPopup message={successMessage} onClose={closeSuccessPopup} />
+      
+      
     </div>
   );
 };

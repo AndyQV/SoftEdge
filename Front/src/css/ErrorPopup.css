@@ -1,6 +1,7 @@
 /* Fondo oscuro y borroso para el overlay */
 .error-popup-overlay {
     position: fixed;
+    z-index: 3000 !important;
     top: 0;
     left: 0;
     width: 100vw;
@@ -15,6 +16,7 @@
 /* Contenedor del pop-up */
 .error-popup-content {
     background-color: #ffffff;
+    z-index: 3100 !important;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);

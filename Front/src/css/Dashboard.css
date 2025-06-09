@@ -404,12 +404,14 @@ body {
 .requirements-section {
   background-color: white;
   border-radius: 12px;
+  z-index: 1000 !important;
   padding: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .requirements-tabs {
   display: flex;
+  z-index: 1000 !important;
   gap: 0.5rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
@@ -417,6 +419,7 @@ body {
 
 .requirement-tab {
   padding: 0.75rem 1.5rem;
+  z-index: 1000 !important;
   border: none;
   background-color: #f0e6ff;
   color: #5d3a7f;
@@ -431,6 +434,7 @@ body {
 
 .requirement-tab.active {
   background-color: #9e72be;
+  z-index: 1000 !important;
   color: white;
 }
 
@@ -490,7 +494,7 @@ td {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1000 !important;
 }
 
 .popup-content {
@@ -501,6 +505,7 @@ td {
   position: relative;
   max-height: 80vh;
   overflow-y: auto;
+  z-index: 1100 !important;
 }
 
 .popup-close {
@@ -1785,4 +1790,10 @@ td {
   margin-bottom: 2rem;
   min-height: 0;
   padding-top: 0;
+}
+
+.popup-overlay {
+  z-index: 2000;
+  position: fixed;
+  /* ... */
 }
