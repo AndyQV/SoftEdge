@@ -24,8 +24,8 @@ function PerfilPopup({ isOpen, onClose, userId }) {
   const [successMessage, setSuccessMessage] = useState("");
 
   const getInitials = (name, lastname) => {
-    const firstInitial = name ? name[0] : '';
-    const lastInitial = lastname ? lastname[0] : '';
+    const firstInitial = name ? name[0] : "";
+    const lastInitial = lastname ? lastname[0] : "";
     return `${firstInitial}${lastInitial}`.toUpperCase();
   };
 
@@ -121,7 +121,6 @@ function PerfilPopup({ isOpen, onClose, userId }) {
         }),
       });
 
-
       const result = await response.json();
 
       if (result.success) {
@@ -133,7 +132,9 @@ function PerfilPopup({ isOpen, onClose, userId }) {
       }
     } catch (error) {
       console.error("Error updating user data:", error);
-      setErrorMessage("Error al actualizar los datos. Por favor, intenta de nuevo.");
+      setErrorMessage(
+        "Error al actualizar los datos. Por favor, intenta de nuevo."
+      );
     }
   };
 
@@ -157,14 +158,17 @@ function PerfilPopup({ isOpen, onClose, userId }) {
     }
 
     try {
-      const response = await fetch(`${BACKEND_URL}/users/${userId}/change-password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(passwordData),
-      });
+      const response = await fetch(
+        `${BACKEND_URL}/users/${userId}/change-password`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(passwordData),
+        }
+      );
 
       const result = await response.json();
 
@@ -185,7 +189,10 @@ function PerfilPopup({ isOpen, onClose, userId }) {
   return (
     <>
       <div className="popup-overlay" onClick={onClose}>
-        <div className="perfil-popup-container smaller-popup-height" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="perfil-popup-container smaller-popup-height"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button className="close-popup-button" onClick={onClose}>
             &times;
           </button>
@@ -210,7 +217,10 @@ function PerfilPopup({ isOpen, onClose, userId }) {
                 )}
                 {isEditing && (
                   <div className="image-upload-container">
-                    <label htmlFor="profile-image-upload" className="upload-label">
+                    <label
+                      htmlFor="profile-image-upload"
+                      className="upload-label"
+                    >
                       Cambiar imagen
                     </label>
                     <input
@@ -268,7 +278,10 @@ function PerfilPopup({ isOpen, onClose, userId }) {
                       />
                     </label>
                     <div className="edit-buttons">
-                      <button className="save-button" onClick={handleSaveChanges}>
+                      <button
+                        className="save-button"
+                        onClick={handleSaveChanges}
+                      >
                         Guardar Cambios
                       </button>
                       <button
@@ -287,9 +300,16 @@ function PerfilPopup({ isOpen, onClose, userId }) {
                     <h2>
                       {userData.username || "X"} {userData.lastname || ""}
                     </h2>
-                    <p><strong>Correo:</strong> {userData.email}</p>
-                    <p><strong>Teléfono:</strong> {userData.phone}</p>
-                    <button className="edit-info-button" onClick={() => setIsEditing(true)}>
+                    <p>
+                      <strong>Correo:</strong> {userData.email}
+                    </p>
+                    <p>
+                      <strong>Teléfono:</strong> {userData.phone}
+                    </p>
+                    <button
+                      className="edit-info-button"
+                      onClick={() => setIsEditing(true)}
+                    >
                       Editar Información
                     </button>
                   </>
@@ -299,7 +319,10 @@ function PerfilPopup({ isOpen, onClose, userId }) {
                     <p>Cargando información del usuario...</p>
                   </div>
                 )}
-                <button className="change-password-button" onClick={() => setShowPasswordPopup(true)}>
+                <button
+                  className="change-password-button"
+                  onClick={() => setShowPasswordPopup(true)}
+                >
                   Cambiar Contraseña
                 </button>
               </div>
@@ -309,8 +332,14 @@ function PerfilPopup({ isOpen, onClose, userId }) {
       </div>
 
       {showPasswordPopup && (
-        <div className="popup-overlay" onClick={() => setShowPasswordPopup(false)}>
-          <div className="password-popup-container" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="popup-overlay"
+          onClick={() => setShowPasswordPopup(false)}
+        >
+          <div
+            className="password-popup-container"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2>Cambiar Contraseña</h2>
             <label>
               Contraseña Actual:
@@ -340,7 +369,10 @@ function PerfilPopup({ isOpen, onClose, userId }) {
               />
             </label>
             <div className="popup-buttons">
-              <button className="cancel-button" onClick={() => setShowPasswordPopup(false)}>
+              <button
+                className="cancel-button"
+                onClick={() => setShowPasswordPopup(false)}
+              >
                 Cancelar
               </button>
               <button className="save-button" onClick={handleSavePassword}>
@@ -352,11 +384,17 @@ function PerfilPopup({ isOpen, onClose, userId }) {
       )}
 
       {errorMessage && (
-        <ErrorPopup message={errorMessage} onClose={() => setErrorMessage("")} />
+        <ErrorPopup
+          message={errorMessage}
+          onClose={() => setErrorMessage("")}
+        />
       )}
 
       {successMessage && (
-        <SuccessPopup message={successMessage} onClose={() => setSuccessMessage("")} />
+        <SuccessPopup
+          message={successMessage}
+          onClose={() => setSuccessMessage("")}
+        />
       )}
     </>
   );
