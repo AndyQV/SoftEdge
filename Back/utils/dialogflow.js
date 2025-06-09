@@ -2,17 +2,29 @@ import { db } from "../utils/firebase.js";
 
 export class DialogflowService {
   static async getProjectDetails(projectName) {
-    // Obtener el proyecto por nombre
-    const snapshot = await db
+    // Intento exacto
+    let snapshot = await db
       .collection("proyectos")
       .where("nombreProyecto", "==", projectName)
       .limit(1)
       .get();
 
+    // Intento inexacto
     if (snapshot.empty) {
-      throw new Error("Project not found");
+      const allProjects = await db.collection("proyectos").get();
+
+      const matchedDoc = allProjects.docs.find(
+        (doc) =>
+          doc.data().nombreProyecto.toLowerCase() === projectName.toLowerCase()
+      );
+
+      if (!matchedDoc) {
+        throw new Error("Project not found");
+      }
+
+      return matchedDoc.data();
     }
-    // Regresar el primer proyecto encontrado
+
     return snapshot.docs[0].data();
   }
 

@@ -17,7 +17,7 @@ const AvatarIA = () => {
   const [showVoicePopup, setShowVoicePopup] = useState(false);
   const [messages, setMessages] = useState([
     {
-      text: `Hola, soy Stratty, asistente virtual. Si quieres conocer más sobre la página, pregúntame. Si quieres información sobre algún proyecto, pregúntame: "Qué es el proyecto X?" (asegúrate de escribir el nombre exacto). Si tienes dudas sobre cómo crear o editar proyectos, elementos, o miembros de equipo, pregúntamelo directamente. Si quieres saber sobre todos los proyectos disponibles, pídeme que "liste proyectos".`,
+      text: `Hola, soy Stratty, asistente virtual. Si quieres conocer más sobre la página, pregúntame. Si quieres información sobre algún proyecto, pregúntame: "Qué es el proyecto X?". Si tienes dudas sobre cómo crear o editar proyectos, elementos, o miembros de equipo, pregúntamelo directamente. Si quieres saber sobre todos los proyectos disponibles, pídeme que "liste proyectos".`,
       sender: "other",
     },
   ]);
